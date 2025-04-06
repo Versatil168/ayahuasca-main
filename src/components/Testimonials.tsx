@@ -1,32 +1,29 @@
+// src/components/Testimonials.tsx
 import { useState, useEffect } from "react";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { 
+  subscribeToTestimonials, 
+  addTestimonial, 
+  Testimonial 
+} from "../services/firebase";
 
 export default function Testimonials() {
-  interface Testimonial {
-    id: number;
-    name: string;
-    image: string;
-    content: string;
-    rating: number;
-  }
-  
-
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    image: null as File | null,
     content: "",
     rating: 5,
   });
-  
 
-  // Cargar los testimonios desde el backend
+  // Subscribe to testimonials in real-time
   useEffect(() => {
-    fetch("https://ayahuascamurayariperu.com/testimonios.php") // Reemplaza con tu dominio
-      .then((res) => res.json())
-      .then((data) => setTestimonials(data))
-      .catch((err) => console.error("Error al cargar testimonios:", err));
+    const unsubscribe = subscribeToTestimonials((testimonials) => {
+      setTestimonials(testimonials);
+    });
+
+    return () => unsubscribe(); // Clean up subscription on component unmount
   }, []);
 
   const handleChange = (
@@ -39,58 +36,47 @@ export default function Testimonials() {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = new FormData();
-    form.append("name", formData.name);
-    form.append("content", formData.content);
-    form.append("rating", formData.rating.toString());
-    if (formData.image) {
-      form.append("image", formData.image);
+    if (!formData.name || !formData.content) {
+      alert("Por favor, complete los campos obligatorios");
+      return;
     }
 
-    // Enviar nuevo testimonio al backend
-    fetch("https://ayahuascamurayariperu.com/testimonios.php", {
-      method: "POST",
-      body: form,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Testimonio enviado con éxito");
-          setFormData({
-            name: "",
-            image: null,
-            content: "",
-            rating: 5,
-          });
-          // Recargar los testimonios después de enviar el nuevo
-          fetch("https://ayahuascamurayariperu.com/testimonios.php")
-            .then((res) => res.json())
-            .then((data) => setTestimonials(data));
-        } else {
-          alert("Error al enviar testimonio");
-        }
+    setIsSubmitting(true);
+    try {
+      // Add testimonial to Firestore
+      await addTestimonial({
+        name: formData.name,
+        content: formData.content,
+        rating: formData.rating,
       });
+
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        content: "",
+        rating: 5,
+      });
+
+      alert("¡Testimonio enviado con éxito!");
+    } catch (error) {
+      console.error("Error al enviar testimonio:", error);
+      alert("Error al enviar testimonio. Por favor, inténtelo de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const prevSlide = () => {
+    if (testimonials.length === 0) return;
     setCurrentIndex((prev) =>
       prev === 0 ? testimonials.length - 1 : prev - 1
     );
   };
 
   const nextSlide = () => {
+    if (testimonials.length === 0) return;
     setCurrentIndex((prev) =>
       prev === testimonials.length - 1 ? 0 : prev + 1
     );
@@ -99,7 +85,7 @@ export default function Testimonials() {
   useEffect(() => {
     const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, [testimonials]);
+  }, [testimonials.length]);
 
   return (
     <section className="py-16 bg-gray-50 relative">
@@ -129,15 +115,6 @@ export default function Testimonials() {
             required
           />
 
-          {/* Añadido el texto y label para el campo de la imagen */}
-          <label className="block mb-2 text-sm text-gray-600">Por favor subir foto suya</label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleFileChange}
-            className="w-full mb-2 p-2 border rounded"
-          />
-
           <textarea
             name="content"
             placeholder="Escribe tu testimonio..."
@@ -158,61 +135,69 @@ export default function Testimonials() {
           </select>
           <button
             type="submit"
-            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+            disabled={isSubmitting}
+            className={`bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Enviar Testimonio
+            {isSubmitting ? "Enviando..." : "Enviar Testimonio"}
           </button>
         </form>
 
-
-
         {/* Carrusel */}
         <div className="relative mt-10 overflow-hidden max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
-          <div
-            className="flex transition-transform duration-500"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {testimonials.map((t) => (
-              <div key={t.id} className="min-w-full p-6 sm:p-10">
-                <div className="bg-white rounded-xl p-8 shadow-md text-center">
-                  <img
-                    className="h-20 w-20 sm:h-24 sm:w-24 mx-auto rounded-full object-cover"
-                    src={t.image || "/default.jpg"}
-                    alt={t.name}
-                  />
-                  <h4 className="mt-4 text-xl font-bold text-gray-900">
-                    {t.name}
-                  </h4>
-                  <p className="text-sm sm:text-base text-gray-500"></p>
-                  <div className="mt-2 flex justify-center">
-                    {[...Array(t.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-5 w-5 text-yellow-400 fill-current"
-                      />
-                    ))}
+          {testimonials.length > 0 ? (
+            <>
+              <div
+                className="flex transition-transform duration-500"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {testimonials.map((t) => (
+                  <div key={t.id} className="min-w-full p-6 sm:p-10">
+                    <div className="bg-white rounded-xl p-8 shadow-md text-center">
+                      <div className="h-20 w-20 sm:h-24 sm:w-24 mx-auto rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500 text-xl font-bold">
+                          {t.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <h4 className="mt-4 text-xl font-bold text-gray-900">
+                        {t.name}
+                      </h4>
+                      <div className="mt-2 flex justify-center">
+                        {[...Array(t.rating)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className="h-5 w-5 text-yellow-400 fill-current"
+                          />
+                        ))}
+                      </div>
+                      <p className="mt-4 text-base sm:text-lg text-gray-700 italic leading-relaxed">
+                        "{t.content}"
+                      </p>
+                    </div>
                   </div>
-                  <p className="mt-4 text-base sm:text-lg text-gray-700 italic leading-relaxed">
-                    "{t.content}"
-                  </p>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Botones */}
-          <button
-            onClick={prevSlide}
-            className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-4 text-white bg-black/20 p-2 sm:p-3 rounded-full hover:bg-black/40 transition"
-          >
-            <ChevronLeft size={30} />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-4 text-white bg-black/20 p-2 sm:p-3 rounded-full hover:bg-black/40 transition"
-          >
-            <ChevronRight size={30} />
-          </button>
+              {/* Botones de navegación */}
+              <button
+                onClick={prevSlide}
+                className="absolute top-1/2 -translate-y-1/2 left-2 sm:left-4 text-white bg-black/20 p-2 sm:p-3 rounded-full hover:bg-black/40 transition"
+              >
+                <ChevronLeft size={30} />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute top-1/2 -translate-y-1/2 right-2 sm:right-4 text-white bg-black/20 p-2 sm:p-3 rounded-full hover:bg-black/40 transition"
+              >
+                <ChevronRight size={30} />
+              </button>
+            </>
+          ) : (
+            <div className="text-center py-10">
+              <p className="text-gray-500">Aún no hay testimonios. ¡Sé el primero en compartir tu experiencia!</p>
+            </div>
+          )}
         </div>
       </div>
     </section>
