@@ -1,4 +1,3 @@
-// src/pages/ContactPage.tsx
 import React from 'react';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 
@@ -12,32 +11,30 @@ const ContactPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
         <div className="bg-white p-6 rounded-lg shadow-md text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mb-4">
-            <Phone className="h-6 w-6 text-indigo-600" />
+            <Phone className="h-6 w-6 text-green-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Teléfono</h3>
-          <p className="text-gray-600">+123 456 7890</p>
-          <p className="text-gray-600">Lun-Vie: 9:00 - 18:00</p>
+          <p className="text-gray-600">+51 960 695 965</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mb-4">
-            <Mail className="h-6 w-6 text-indigo-600" />
+            <Mail className="h-6 w-6 text-green-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Email</h3>
-          <p className="text-gray-600">info@tumarca.com</p>
-          <p className="text-gray-600">soporte@tumarca.com</p>
+          <p className="text-gray-600">rovirmu@hotmail.com </p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mb-4">
-            <MapPin className="h-6 w-6 text-indigo-600" />
+            <MapPin className="h-6 w-6 text-green-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Dirección</h3>
-          <p className="text-gray-600">Calle Principal 123</p>
-          <p className="text-gray-600">Ciudad, CP 12345</p>
+          <p className="text-gray-600">asd</p>
+          <p className="text-gray-600">Cusco, Perú</p>
         </div>
       </div>
 
@@ -53,7 +50,7 @@ const ContactPage: React.FC = () => {
                 <input
                   type="text"
                   id="name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Tu nombre"
                 />
               </div>
@@ -64,7 +61,7 @@ const ContactPage: React.FC = () => {
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="tu@email.com"
                 />
               </div>
@@ -76,7 +73,7 @@ const ContactPage: React.FC = () => {
               <input
                 type="text"
                 id="subject"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="Asunto del mensaje"
               />
             </div>
@@ -87,14 +84,14 @@ const ContactPage: React.FC = () => {
               <textarea
                 id="message"
                 rows={5}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="Tu mensaje aquí..."
               ></textarea>
             </div>
             <div>
               <button
                 type="submit"
-                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300"
               >
                 Enviar Mensaje
               </button>
@@ -104,9 +101,18 @@ const ContactPage: React.FC = () => {
 
         <div>
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Ubicación</h2>
-          <div className="bg-gray-200 h-96 rounded-lg flex items-center justify-center">
-            <span className="text-gray-500">Mapa de Google se mostrará aquí</span>
+          <div className="rounded-lg overflow-hidden shadow-lg">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d57378.217995202176!2d-71.93924905!3d-13.5300193!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x916dd5d826598431%3A0x2aa996cc2318315d!2sCusco!5e1!3m2!1sen!2spe!4v1743823248808!5m2!1sen!2spe"
+              width="100%"
+              height="400"
+              style={{ border: "0" }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
+
           <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center mb-4">
               <Clock className="h-5 w-5 text-indigo-600 mr-2" />
