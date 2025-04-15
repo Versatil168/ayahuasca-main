@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
-import { Link, useLocation } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 
 const slides = [
   {

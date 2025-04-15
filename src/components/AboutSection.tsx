@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Link, useLocation } from 'react-router-dom';
 
 export default function AboutSection() {
   const navigate = useNavigate();

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import WhatsAppButton from '../components/WhatsAppButton'; // Adjust the path as necessary
+
 
 const BañoFlorecimiento = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -117,7 +119,10 @@ const BañoFlorecimiento = () => {
           ))}
         </div>
       </div>
+      {/* Botón flotante de WhatsApp */}
+      <WhatsAppButton />
     </div>
+    
   );
 };
 
